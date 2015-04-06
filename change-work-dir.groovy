@@ -19,7 +19,7 @@ def parameters = build?.actions.find{ it instanceof ParametersAction }?.paramete
 def slaves = []
 def label_contents =""
 def serverPrefix = ""
-def remoteFS=""
+def newRemoteFS=""
 def getParameter = { paramName ->
     parameters.findAll {
         it.name == paramName
@@ -29,16 +29,18 @@ def getParameter = { paramName ->
 range_start = getParameter("RANGE_START")
 range_end = getParameter("RANGE_END")
 serverPrefix = getParameter("SERVER_PREFIX")
-remoteFS= getParameter("REMOTE_FS")
+newRemoteFS= getParameter("REMOTE_FS")
 
 (range_start.toInteger()..range_end.toInteger()).each{
     slaves.add(serverPrefix+it)
 }
 
-slaves.each{
-    def jenkinsNode = jenkins.getNode(it)
+
+def changeRemoteFS =  {node, remoteFS ->
+    def jenkinsNode = jenkins.getNode(node)
     if ( jenkinsNode != null ) {
-        def nodeName = it
+        println "INFO : Get information from Node ${node}"
+        def nodeName = node
         def nodeDesc = jenkinsNode.getNodeDescription()?.toString()
         def nodeRemoteFS = jenkinsNode.getRemoteFS()
         def nodeNumExecutores = jenkinsNode.getNumExecutors()
@@ -48,7 +50,8 @@ slaves.each{
         def launcherHost = launcher.getHost()
         def launcherCredential = launcher.getCredentials()
         def nodeRetentionStrategy = jenkinsNode.getRetentionStrategy()
-        def newSlave = new DumbSlave(
+        println "INFO : Create new DumbSlave with RemoteFS : ${nodeRemoteFS}"
+        def newNode = new DumbSlave(
                 nodeName,
                 nodeDesc,
                 remoteFS,
@@ -59,8 +62,14 @@ slaves.each{
                 nodeRetentionStrategy,
                 new LinkedList()
         )
+        println "INFO : Remove old  node ${nodeName}" + " - ${jenkinsNode}"
         jenkins.removeNode(jenkinsNode)
-        jenkins.addNode(newSlave)
+        println "INFO : Add new node ${nodeName}" + " - ${newNode}"
+        jenkins.addNode(newNode)
     }
+}
+
+slaves.each{
+    changeRemoteFS(it, newRemoteFS)
 }
 
