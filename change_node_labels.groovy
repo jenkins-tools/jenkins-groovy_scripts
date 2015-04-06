@@ -46,9 +46,7 @@ println "END: ${range_end}"
 
 
 for ( x in range_start..range_end	 ) {
-    //slaves.add("swfarm-gateuobld"+x)
     slaves.add(serverPrefix+x)
-    //println serverPrefix+x
 }
 
 println(label_contents)
