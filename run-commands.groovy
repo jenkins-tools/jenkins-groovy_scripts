@@ -60,24 +60,21 @@ def myData = new MyData()
 
 (range_start.toInteger()..range_end.toInteger()).each
         {
-            println "IT : " + it
             slaves.add(serverPrefix+it)
             myData.addItem(serverPrefix+it)
-            println "end : " + it
         }
-
-
-println "SIZE : " + myData.size()
 
 def runCommand = { targetnode, targetcommands ->
     def threadName = Thread.currentThread().getName()
-    println "INFO : ${threadName} : Run commmands - ${targetcommands} - on ${targetnode}"
-    println "INFO : ${threadName} : Result : "+"ssh ${targetnode} ${targetcommands}".execute().text
-    println "INFO : ${threadName} : END"
-    return Thread.currentThread().getName() +":Return Value"
+    def returnString = ""
+    returnString += "INFO : ${threadName} : Run commmands - ${targetcommands} - on ${targetnode}\n"
+    returnString += "INFO : ${threadName} : Result : "+"ssh ${targetnode} ${targetcommands}".execute().text + "\n"
+    returnString += "INFO : ${threadName} : END" + "\n"
+    return returnString
 }
 
 def threads = []
+
 10.times {
     threads << Thread.start {
         def exitValue = "false"
@@ -85,8 +82,8 @@ def threads = []
             try{
                 def testvalue=myData.getItem()
                 println Thread.currentThread().getName() + ":" + testvalue
-                def testString = runCommand(testvalue, "hostname")
-                println testString
+                def commandOutput= runCommand(testvalue, "hostname")
+                println commandOutput
 
             }catch(ex){
                 exitValue="true"
