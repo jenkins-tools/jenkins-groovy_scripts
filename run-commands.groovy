@@ -2,13 +2,13 @@ import hudson.model.*
 import jenkins.model.Jenkins
 import groovy.transform.Synchronized
 
-class MyData {
-    def test = []
+class TargetNodes {
+    def targetNodes= []
 
     @Synchronized
     String getItem(){
-        def rValue = test.get(0)
-        test.remove(0)
+        def rValue = targetNodes.get(0)
+        targetNodes.remove(0)
         return rValue
 
     }
@@ -18,7 +18,7 @@ class MyData {
         if (jenkinsNode != null){
             def launcher=jenkinsNode.launcher
             def nodeIp = launcher.host
-            test.add(nodeIp)
+            targetNodes.add(nodeIp)
         }
     }
 
@@ -40,6 +40,7 @@ def range_end = ""
 
 
 
+
 // get parameters
 def parameters = build?.actions.find{ it instanceof ParametersAction }?.parameters
 def slaves = []
@@ -56,7 +57,7 @@ range_end = getParameter("RANGE_END")
 serverPrefix = getParameter("SERVER_PREFIX")
 commands= getParameter("COMMANDS")
 
-def myData = new MyData()
+def myData = new TargetNodes()
 
 (range_start.toInteger()..range_end.toInteger()).each
         {
@@ -81,8 +82,8 @@ def threads = []
         while(exitValue=="false"){
             try{
                 def testvalue=myData.getItem()
-                println Thread.currentThread().getName() + ":" + testvalue
-                def commandOutput= runCommand(testvalue, "hostname")
+                println "INFO : " + Thread.currentThread().getName() + " : Start commands on " + testvalue
+                def commandOutput= runCommand(testvalue, commands)
                 println commandOutput
 
             }catch(ex){
