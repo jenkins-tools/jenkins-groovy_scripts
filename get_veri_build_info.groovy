@@ -55,12 +55,9 @@ for ( item in jenkins.items)
         gerrit_host = parameter_lists.get("GERRIT_HOST")
 
         if ( gerrit_host ==~ /gpro.palm.com/ ) {       
-          def query_string="SELECT UNIX_TIMESTAMP(written_on) FROM change_messages WHERE
-patchset_change_id=${change_number} AND patchset_patch_set_id=${patchset_number} AND message LIKE
-'%Build+%'"
+          def query_string="SELECT UNIX_TIMESTAMP(written_on) FROM change_messages WHERE patchset_change_id=${change_number} AND patchset_patch_set_id=${patchset_number} AND message LIKE '%Build+%'"
           def query_command="echo ${query_string}".execute()
-          def db_command="mysql --host=gpro.palm.com --password=welcome1 --user=jenkins
-reviewdb".execute()
+          def db_command="mysql --host=gpro.palm.com --password=welcome1 --user=jenkins reviewdb".execute()
           def get_time_command = "sed -n 2p".execute()
           command_pipe = query_command | db_command | get_time_command
           def written_on_time_in_seconds = ""
