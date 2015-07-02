@@ -49,7 +49,7 @@ if ( errorMessage.size() > 0 ){
     errorMessage.each{
         message="${message}\\n${i}. ${it}";
     }
-    message="${message}\",\"labels\":{\"Verified\":-1}}\'";
+    message="${message}\",\"labels\":{\"Code-Review\":-1}}\'";
 
 
     def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} https://gpro.lgsvl.com/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
