@@ -13,6 +13,7 @@ def gerritHost = env['GERRIT_HOST'];
 def gerritChangeNumber = env['GERRIT_CHANGE_NUMBER'];
 def gerritChangeUrl= env['GERRIT_CHANGE_URL'];
 def gerritPatchsetNumber = env['GERRIT_PATCHSET_NUMBER'];
+def buildUrl = env['BUILD_URL'];
 /*
 def decodingCommitMessage = "echo ${commitMessageEncoded}".execute() | "base64 --decode".execute()
 
@@ -40,10 +41,13 @@ errorMessage.each{
 def user = "sunjoo.park";
 def password = "kuie1996";
 
+
 if ( errorMessage.size() > 0 ){
     def message="\'{\"message\":\"";
+    def i=1;
+    message="${message}\\n Checker Url : ${buildUrl}\\n";
     errorMessage.each{
-        message="${message}\\n${it}";
+        message="${message}\\n${i}. ${it}";
     }
     message="${message}\"}\'";
 
