@@ -55,6 +55,7 @@ if ( gerritHost.matches("^(gpro.lgsvl.com|gpro.palm.com).*")) {
 }else if ( gerritHost.matches("wall.lge.com")){
     user = "gatekeeper.tvsw";
     password = "bx9BusKqIPPsNIxeGk5YVuIAGXl4rBmlUQLGTbveQQ";
+    reviewLabel = "CommitLog";
 }else {
     throw new Exception("ERROR: This script does not support your host : ${gerritHost}");
 }
