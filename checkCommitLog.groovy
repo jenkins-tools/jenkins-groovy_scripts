@@ -41,13 +41,28 @@ errorMessage.each{
     println it;
 }
 
-def user = "sunjoo.park";
-def password = "kuie1996";
+//Parse Change Url
+def gerritWebUrl = gerritChangeUrl.split("/");
+def gerritWebProtocol = gerritWebUrl[0];
 
+def user = "";
+def password = "";
+
+if ( gerritHost.matches("^(gpro.lgsvl.com|gpro.palm.com).*")) {
+    user = "sunjoo.park";
+    password = "kuie1996";
+}else if ( gerritHost.matches("wall.lge.com")){
+    user = "gatekeeper.tvsw";
+    password = "bx9BusKqIPPsNIxeGk5YVuIAGXl4rBmlUQLGTbveQQ";
+}else {
+    throw new Exception("ERROR: This script does not support your host : ${gerritHost}");
+}
 
 def message="\'{\"message\":\"";
 def i=1;
 message="${message}\\n Checker Url : ${buildUrl}\\n";
+
+//Message Data Generation
 if ( errorMessage.size() > 0 ) {
     errorMessage.each {
         message = "${message}\\n${i}. ${it}";
@@ -59,7 +74,7 @@ if ( errorMessage.size() > 0 ) {
 }
 
 
-def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} https://gpro.lgsvl.com/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
+def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} ${gerritWebProtocol}//${gerritHost}/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
 println "Review Command : ${reviewCommand}";
 def reviewTrigger = reviewCommand.execute(null, new File("/tmp"));
 def pcOut= new StringBuffer(), pcError= new StringBuffer()
