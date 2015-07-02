@@ -14,6 +14,9 @@ def gerritChangeNumber = env['GERRIT_CHANGE_NUMBER'];
 def gerritChangeUrl= env['GERRIT_CHANGE_URL'];
 def gerritPatchsetNumber = env['GERRIT_PATCHSET_NUMBER'];
 def buildUrl = env['BUILD_URL'];
+
+
+def reviewLabel = "Code-Review";
 /*
 def decodingCommitMessage = "echo ${commitMessageEncoded}".execute() | "base64 --decode".execute()
 
@@ -42,24 +45,26 @@ def user = "sunjoo.park";
 def password = "kuie1996";
 
 
-if ( errorMessage.size() > 0 ){
-    def message="\'{\"message\":\"";
-    def i=1;
-    message="${message}\\n Checker Url : ${buildUrl}\\n";
-    errorMessage.each{
-        message="${message}\\n${i}. ${it}";
+def message="\'{\"message\":\"";
+def i=1;
+message="${message}\\n Checker Url : ${buildUrl}\\n";
+if ( errorMessage.size() > 0 ) {
+    errorMessage.each {
+        message = "${message}\\n${i}. ${it}";
     }
-    message="${message}\",\"labels\":{\"Code-Review\":-1}}\'";
-
-
-    def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} https://gpro.lgsvl.com/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
-    println "Review Command : ${reviewCommand}";
-    def reviewTrigger = reviewCommand.execute(null, new File("/tmp"));
-    def pcOut= new StringBuffer(), pcError= new StringBuffer()
-    reviewTrigger.consumeProcessOutput(pcOut,pcError);
-    reviewTrigger.waitFor();
-    println "Exit: ${reviewTrigger.exitValue()}";
-    println "OUT: ${pcOut}";
-    println "ERROR: ${pcError}";
+    message = "${message}\",\"labels\":{\"${reviewLabel}\":-1}}\'";
+}else {
+    message="${message}\\nLog Format : OK";
+    message = "${message}\",\"labels\":{\"${reviewLabel}\":1}}\'";
 }
 
+
+def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} https://gpro.lgsvl.com/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
+println "Review Command : ${reviewCommand}";
+def reviewTrigger = reviewCommand.execute(null, new File("/tmp"));
+def pcOut= new StringBuffer(), pcError= new StringBuffer()
+reviewTrigger.consumeProcessOutput(pcOut,pcError);
+reviewTrigger.waitFor();
+println "Exit: ${reviewTrigger.exitValue()}";
+println "OUT: ${pcOut}";
+println "ERROR: ${pcError}";
