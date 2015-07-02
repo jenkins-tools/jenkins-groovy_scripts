@@ -42,8 +42,9 @@ errorMessage.each{
 }
 
 //Parse Change Url
-def gerritWebUrl = gerritChangeUrl.split("/");
-def gerritWebProtocol = gerritWebUrl[0];
+def gerritChangeUrlArr = gerritChangeUrl.split("/");
+def gerritWebProtocol = gerritChangeUrlArr[0];
+def gerritWebHost = gerritChangeUrlArr[2];
 
 def user = "";
 def password = "";
@@ -74,7 +75,7 @@ if ( errorMessage.size() > 0 ) {
 }
 
 
-def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} ${gerritWebProtocol}//${gerritHost}/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
+def reviewCommand = ['bash', '-c', "curl -H \"Content-Type: application/json\" --digest --user ${user}:${password} -d ${message} ${gerritWebProtocol}//${gerritWebHost}/a/changes/${gerritChangeNumber}/revisions/${gerritPatchsetNumber}/review"];
 println "Review Command : ${reviewCommand}";
 def reviewTrigger = reviewCommand.execute(null, new File("/tmp"));
 def pcOut= new StringBuffer(), pcError= new StringBuffer()
