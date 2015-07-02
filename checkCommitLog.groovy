@@ -28,7 +28,7 @@ def changeMessage =  decodingCommitMessage.text
 def errorMessage = [];
 
 if ( changeSubject.matches("^(meta-lg-webos|meta-starfish|meta-).*:.*")){
-    errorMessage << "Do not use a subject starting with meta-*. Your subject is '${changeSubject}' ";
+    errorMessage << "Do not use a subject starting with meta-*. Your subject : ${changeSubject} ";
 }
 
 def changeMessageList  = changeMessage.split("\n");
